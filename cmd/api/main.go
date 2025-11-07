@@ -22,10 +22,13 @@ func main() {
 	defer db.Close()
 
 	bookRepo := postgres.NewBookRepository(db)
+	authorRepo := postgres.NewAuthorRepository(db)
 
 	bookService := service.NewBookService(bookRepo)
+	authorService := service.NewAuthorService(authorRepo, bookRepo)
 
 	bookHandler := v1.NewBookHandler(bookService)
+	authorHandler := v1.NewAuthorHandler(authorService)
 
 	app := fiber.New()
 
@@ -40,6 +43,16 @@ func main() {
 			books.Get("/:id", bookHandler.GetBook)
 			books.Put("/:id", bookHandler.UpdateBook)
 			books.Delete("/:id", bookHandler.DeleteBook)
+		}
+
+		authors := api.Group("/authors")
+		{
+			authors.Post("/", authorHandler.CreateAuthor)
+			authors.Get("/", authorHandler.GetAllAuthors)
+			authors.Get("/:id", authorHandler.GetAuthor)
+			authors.Get("/:id/books", authorHandler.GetAuthorWithBooks) // GET author with all books
+			authors.Put("/:id", authorHandler.UpdateAuthor)
+			authors.Delete("/:id", authorHandler.DeleteAuthor)
 		}
 	}
 

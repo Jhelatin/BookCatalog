@@ -7,8 +7,10 @@ import (
 type Book struct {
 	ID          int       `json:"id"`
 	Title       string    `json:"title"`
-	Author      string    `json:"author"`
+	AuthorID    int       `json:"author_id"`
+	Author      *Author   `json:"author,omitempty"` // Для JOIN операций
 	ISBN        string    `json:"isbn"`
+	Description string    `json:"description"`
 	PublishedAt time.Time `json:"published_at"`
 	CreatedAt   time.Time `json:"created_at"`
 	UpdatedAt   time.Time `json:"updated_at"`

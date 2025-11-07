@@ -11,4 +11,5 @@ type BookRepository interface {
 	FindAll(ctx context.Context) ([]*entity.Book, error)
 	Update(ctx context.Context, book *entity.Book) error
 	Delete(ctx context.Context, id int) error
+	FindByAuthorID(ctx context.Context, authorID int) ([]*entity.Book, error)
 }
