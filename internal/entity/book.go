@@ -15,3 +15,10 @@ type Book struct {
 	CreatedAt   time.Time `json:"created_at"`
 	UpdatedAt   time.Time `json:"updated_at"`
 }
+
+type BookResponse struct {
+	Book
+	AverageRating float64 `json:"average_rating,omitempty"`
+	UserRating    *int    `json:"user_rating,omitempty"`
+	TotalRatings  int     `json:"total_ratings,omitempty"`
+}

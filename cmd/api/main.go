@@ -24,14 +24,17 @@ func main() {
 	bookRepo := postgres.NewBookRepository(db)
 	authorRepo := postgres.NewAuthorRepository(db)
 	userRepo := postgres.NewUserRepository(db)
+	ratingRepo := postgres.NewRatingRepository(db)
 
-	bookService := service.NewBookService(bookRepo)
+	ratingService := service.NewRatingService(ratingRepo, bookRepo)
+	bookService := service.NewBookService(bookRepo, ratingService)
 	authorService := service.NewAuthorService(authorRepo, bookRepo)
 	authService := service.NewAuthService(userRepo, cfg.JWTSecret)
 
 	bookHandler := v1.NewBookHandler(bookService)
 	authorHandler := v1.NewAuthorHandler(authorService)
 	authHandler := v1.NewAuthHandler(authService)
+	ratingHandler := v1.NewRatingHandler(ratingService)
 
 	app := fiber.New()
 
@@ -61,6 +64,14 @@ func main() {
 		users := api.Group("/users")
 		{
 			users.Post("/login", authHandler.Login)
+		}
+		ratings := api.Group("/ratings")
+		{
+			ratings.Post("/", ratingHandler.RateBook)
+			ratings.Get("/my", ratingHandler.GetMyRatings)
+			ratings.Get("/books-with-my-ratings", ratingHandler.GetBooksWithMyRatings)
+			ratings.Get("/book/:book_id", ratingHandler.GetMyRating)
+			ratings.Delete("/book/:book_id", ratingHandler.RemoveRating)
 		}
 	}
 

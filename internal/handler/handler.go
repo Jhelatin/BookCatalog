@@ -41,7 +41,12 @@ func (h *BookHandler) GetBook(c *fiber.Ctx) error {
 		})
 	}
 
-	book, err := h.bookService.GetBook(c.Context(), id)
+	var userID int
+	if c.Locals("userID") != nil {
+		userID = c.Locals("userID").(int)
+	}
+
+	book, err := h.bookService.GetBook(c.Context(), id, userID)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Failed to get book",
