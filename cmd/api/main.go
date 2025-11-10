@@ -23,12 +23,15 @@ func main() {
 
 	bookRepo := postgres.NewBookRepository(db)
 	authorRepo := postgres.NewAuthorRepository(db)
+	userRepo := postgres.NewUserRepository(db)
 
 	bookService := service.NewBookService(bookRepo)
 	authorService := service.NewAuthorService(authorRepo, bookRepo)
+	authService := service.NewAuthService(userRepo, cfg.JWTSecret)
 
 	bookHandler := v1.NewBookHandler(bookService)
 	authorHandler := v1.NewAuthorHandler(authorService)
+	authHandler := v1.NewAuthHandler(authService)
 
 	app := fiber.New()
 
@@ -53,6 +56,11 @@ func main() {
 			authors.Get("/:id/books", authorHandler.GetAuthorWithBooks) // GET author with all books
 			authors.Put("/:id", authorHandler.UpdateAuthor)
 			authors.Delete("/:id", authorHandler.DeleteAuthor)
+		}
+
+		users := api.Group("/users")
+		{
+			users.Post("/login", authHandler.Login)
 		}
 	}
 
